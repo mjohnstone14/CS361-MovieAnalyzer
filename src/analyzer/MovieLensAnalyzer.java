@@ -1,5 +1,6 @@
 package analyzer;
 import graph.Graph;
+import util.DataLoader;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -38,8 +39,9 @@ public class MovieLensAnalyzer {
 		//initialize
 		Scanner sc = new Scanner(System.in);
 		StringBuilder sb = new StringBuilder();
-		List<List<String>> parsedRatings = readCSV(ratingPath);
-		List<List<String>> parsedMoves = readCSV(moviePath);
+		//load data from csv
+		DataLoader loader = new DataLoader();
+		loader.loadData(moviePath, ratingPath);
 		//create prompt
 		sb.append("\nThere are 3 choices for defining adjacency:\n");
 		sb.append("[Option 1] u and v are adjacent if the same 12 users gave the same rating to both movies\n");
@@ -63,6 +65,8 @@ public class MovieLensAnalyzer {
 		Graph<Integer> g = new Graph<>();
 		if (userOption == 1) {
 			g = createByRatings();
+			loader.printMovieList();
+			loader.printReviewerList();
 		} else if (userOption == 2) {
 
 		} else {
@@ -78,7 +82,6 @@ public class MovieLensAnalyzer {
 		Graph<Integer> ratingsGraph = new Graph<>();
 
 
-
 		return null;
 	}
 
@@ -92,46 +95,4 @@ public class MovieLensAnalyzer {
 
 	}
 
-	public static List<List<String>> readCSV(String filename) {
-		List<List<String>> parsedCSV = new ArrayList<>();
-		//Input file which needs to be parsed
-		String fileToParse = filename;
-		BufferedReader fileReader = null;
-
-		//Delimiter used in CSV file
-		final String DELIMITER = ",";
-		try
-		{
-			String line = "";
-			//Create the file reader
-			fileReader = new BufferedReader(new FileReader(fileToParse));
-
-			//Read the file line by line
-			while ((line = fileReader.readLine()) != null)
-			{
-				//Get all tokens available in
-				List<String> parsedLine = new ArrayList<>();
-				String[] tokens = line.split(DELIMITER);
-				for(String token : tokens)
-				{
-					//Print all tokens
-					parsedLine.add(token);
-				}
-				parsedCSV.add(parsedLine);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		finally
-		{
-			try {
-				fileReader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return parsedCSV;
-	}
 }
