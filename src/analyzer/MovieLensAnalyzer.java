@@ -1,14 +1,14 @@
 package analyzer;
+import data.Movie;
+import data.Reviewer;
 import graph.Graph;
 import util.DataLoader;
+import util.Pair;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class MovieLensAnalyzer {
 	
@@ -60,13 +60,14 @@ public class MovieLensAnalyzer {
 		if (userOption > 3) {
 			throw new IllegalArgumentException("Input option is greater than option range");
 		}
-		sc.close();
+		sc.close(); //closing scanner
 
-		Graph<Integer> g = new Graph<>();
+		//create graph based on option chosen
+		Graph<Movie> g = new Graph<>();
 		if (userOption == 1) {
-			g = createByRatings();
-			loader.printMovieList();
-			loader.printReviewerList();
+			g = createByRatings(loader);
+
+			//loader.printMovieList();
 		} else if (userOption == 2) {
 
 		} else {
@@ -78,8 +79,61 @@ public class MovieLensAnalyzer {
 
 
 	//[Option 1] u and v are adjacent if the same 12 users gave the same rating to both movies
-	public static Graph<Integer> createByRatings() {
-		Graph<Integer> ratingsGraph = new Graph<>();
+	public static Graph<Movie> createByRatings(DataLoader loader) {
+		Set<Integer> reviewerList = new HashSet<>();
+		Graph<Movie> ratingsGraph = new Graph<>();
+		Map<Integer, Movie> movieMap = loader.getMovies();
+		Collection<Movie> values = movieMap.values();
+		Map<Integer, Reviewer> reviewerMap = loader.getReviewers();
+
+		//add nodes to graph
+		for(Movie mov : movieMap.values()) {
+			ratingsGraph.addVertex(mov);
+		}
+
+		Set<Movie> vertices = ratingsGraph.getVertices();
+		Movie vertex = null;
+		//iterate through vertices
+		for(Iterator<Movie> i = vertices.iterator(); i.hasNext();) {
+			reviewerList.clear();
+			vertex = i.next(); //copy the vertex data
+			i.remove(); //delete that vertex from the set
+
+			//iterate through all other vertices
+			for(Iterator<Movie> j = vertices.iterator(); j.hasNext();) {
+				Movie comparator = j.next();
+
+				Map<Integer, Double> ratings = vertex.getRatings();
+				Map<Integer, Double> comparatorRatings = comparator.getRatings();
+
+				if(comparatorRatings.size() > ratings.size()) {
+					for(Map.Entry<Integer, Double> entry : ratings.entrySet()) {
+
+						if(vertex.rated(entry.getKey()) && comparator.rated(entry.getKey())) {
+							Double vertexRating = ratings.get(entry.getKey());
+							Double comparatorRating = comparatorRatings.get(entry.getKey());
+
+							if(vertexRating.equals(comparatorRating)) {
+								reviewerList.add(entry.getKey());
+							} else {
+								System.out.println(entry.getKey());
+							}
+
+
+							System.out.println(entry.getKey() + " Movie: " +  vertex.getTitle() + " " + vertexRating + " Movie: " + comparator.getTitle() + " " + comparatorRating);
+							System.out.println("List of users: " + reviewerList.toString());
+						}
+
+					}
+				} else {
+					//System.out.println("no");
+				}
+
+
+			}
+
+		}
+
 
 
 		return null;
