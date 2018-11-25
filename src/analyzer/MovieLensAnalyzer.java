@@ -85,20 +85,23 @@ public class MovieLensAnalyzer {
 		Map<Integer, Movie> movieMap = loader.getMovies();
 		Collection<Movie> values = movieMap.values();
 		Map<Integer, Reviewer> reviewerMap = loader.getReviewers();
+		int degree = 0;
 
+		System.out.println("Creating graph...");
 		//add nodes to graph
 		for(Movie mov : movieMap.values()) {
 			ratingsGraph.addVertex(mov);
 		}
 
-		Set<Movie> vertices = ratingsGraph.getVertices();
+		Set<Movie> vertices = new HashSet<>();
+		vertices.addAll(ratingsGraph.getVertices());
+
 		Movie vertex = null;
 		//iterate through vertices
 		for(Iterator<Movie> i = vertices.iterator(); i.hasNext();) {
 			reviewerList.clear();
 			vertex = i.next(); //copy the vertex data
-			i.remove(); //delete that vertex from the set
-
+			i.remove();
 			//iterate through all other vertices
 			for(Iterator<Movie> j = vertices.iterator(); j.hasNext();) {
 				Movie comparator = j.next();
@@ -106,37 +109,32 @@ public class MovieLensAnalyzer {
 				Map<Integer, Double> ratings = vertex.getRatings();
 				Map<Integer, Double> comparatorRatings = comparator.getRatings();
 
-				if(comparatorRatings.size() > ratings.size()) {
+
 					for(Map.Entry<Integer, Double> entry : ratings.entrySet()) {
 
 						if(vertex.rated(entry.getKey()) && comparator.rated(entry.getKey())) {
 							Double vertexRating = ratings.get(entry.getKey());
 							Double comparatorRating = comparatorRatings.get(entry.getKey());
 
-							if(vertexRating.equals(comparatorRating)) {
+							if(vertexRating.equals(comparatorRating)) { //note: per user we compare two separate movies, adding that user to a list if they rate the two movies the same
 								reviewerList.add(entry.getKey());
-							} else {
-								System.out.println(entry.getKey());
+								System.out.println(entry.getKey() + " Movie: " +  vertex.getTitle() + " " + vertexRating + " Movie: " + comparator.getTitle() + " " + comparatorRating);
 							}
 
-
-							System.out.println(entry.getKey() + " Movie: " +  vertex.getTitle() + " " + vertexRating + " Movie: " + comparator.getTitle() + " " + comparatorRating);
-							System.out.println("List of users: " + reviewerList.toString());
+							if(reviewerList.size() == 12) {
+								ratingsGraph.addEdge(vertex, comparator);
+								//add stuff for finding the max degree later
+							}
 						}
 
 					}
-				} else {
-					//System.out.println("no");
-				}
-
-
 			}
 
 		}
 
+		System.out.println("Vertices: " + ratingsGraph.numVertices() + " Edges: " + ratingsGraph.numEdges());
 
-
-		return null;
+		return ratingsGraph;
 	}
 
 	//[Option 2] u and v are adjacent if the same 12 users watched both movies (regardless of rating)
