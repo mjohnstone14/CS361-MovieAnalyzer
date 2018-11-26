@@ -1,9 +1,40 @@
 package graph;
+import util.Pair;
+
 import java.util.List;
+import java.util.Arrays;
+import java.util.PriorityQueue;
+
 
 
 public class GraphAlgorithms {
-  public static int[] dijkstrasAlgorithm(Graph<Integer> graph, int source){
+
+    public static int[] dijkstrasAlgorithm(Graph<Integer> graph, int source){
+      int[] distance = new int[graph.numVertices()];
+      int[] prev = new int[graph.numVertices()];
+      PriorityQueue<Pair> queue = new PriorityQueue<>();
+
+      Arrays.fill(distance, Integer.MAX_VALUE/2);
+      distance[source] = 0;
+      queue.offer(new Pair(source, 0));
+
+      while (!queue.isEmpty()) {
+          Pair current = queue.poll();
+          for (Integer n :  graph.getNeighbors((Integer)current.priority)){
+              int weight = 1;
+              if (distance[(Integer) current.priority] != Integer.MAX_VALUE/2 && weight < distance[n]) {
+                  distance[n] = weight;
+                  prev[n] = (Integer) current.priority;
+                  Pair newDistance = new Pair(n, weight);
+                  if (queue.contains(newDistance)) {
+                      queue.remove(newDistance);
+                  }
+                  queue.offer(newDistance);
+              }
+          }
+      }
+
+      return distance;
 
   }
   public static int[][] floydWarshall(Graph<Integer> graph){
