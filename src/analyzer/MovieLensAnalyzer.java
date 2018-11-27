@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class MovieLensAnalyzer {
-	
+
 	public static void main(String[] args){
 		// Your program should take two command-line arguments: 
 		// 1. A ratings file
@@ -37,7 +37,6 @@ public class MovieLensAnalyzer {
 	 */
 	public static void graphByRatings(String ratingPath, String moviePath) {
 		//initialize
-		Scanner sc = new Scanner(System.in);
 		StringBuilder sb = new StringBuilder();
 		//load data from csv
 		DataLoader loader = new DataLoader();
@@ -51,23 +50,13 @@ public class MovieLensAnalyzer {
 		//print prompt
 		System.out.print(sb.toString());
 		//scan for input and catch input exceptions
-		int userOption = 0;
-		try {
-			userOption = sc.nextInt();
-		} catch (InputMismatchException e) {
-			throw new InputMismatchException("Wrong format, please pick a number");
-		}
-		if (userOption > 3) {
-			throw new IllegalArgumentException("Input option is greater than option range");
-		}
-		sc.close(); //closing scanner
+		int userOption = getUserChoice();
 
 		//create graph based on option chosen
-		Graph<Movie> g = new Graph<>();
+		Graph<Movie> g;
 		if (userOption == 1) {
 			g = createByRatings(loader);
-
-			//loader.printMovieList();
+			showGraphInformation(g);
 		} else if (userOption == 2) {
 
 		} else {
@@ -76,7 +65,57 @@ public class MovieLensAnalyzer {
 
 	}
 
+	private static int getUserChoice() {
+		Scanner sc = new Scanner(System.in);
+		int userOption;
+		try {
+			userOption = sc.nextInt();
+		} catch (InputMismatchException e) {
+			throw new InputMismatchException("Wrong format, please pick a number");
+		}
+		if (userOption > 3) {
+			throw new IllegalArgumentException("Input option is greater than option range");
+		}
 
+		return userOption;
+	}
+
+	private static void showGraphInformation(Graph<Movie> graph) {
+		displayGraphOptions();
+		int userOption = getUserChoice();
+
+		if(userOption == 1) {
+			printGraphStats(graph);
+		}
+ 	}
+
+ 	private static void printGraphStats(Graph<Movie> graph) {
+		StringBuilder sb = new StringBuilder();
+
+		int numEdges = graph.numEdges();
+		int numVertices = graph.numVertices();
+
+		float rhs = numVertices * (numVertices-1);
+		float density = numEdges / rhs;
+
+		sb.append("\nThis graph has:\n");
+		sb.append("Vertices: " + numVertices + " Edges: " + numEdges + "\n");
+		sb.append("A density of : " + density);
+
+		System.out.println(sb.toString());
+
+
+	}
+	private static void displayGraphOptions() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n[Option 1] Print out statistics about the graph.\n");
+		sb.append("[Option 2] Print node information.\n");
+		sb.append("[Option 3] Display shortest path between two nodes.\n");
+		sb.append("[Option 4] Quit\n");
+		sb.append("Choose an option 1-4: ");
+		//print prompt
+		System.out.print(sb.toString());
+	}
 
 	//[Option 1] u and v are adjacent if the same 12 users gave the same rating to both movies
 	public static Graph<Movie> createByRatings(DataLoader loader) {
@@ -87,7 +126,7 @@ public class MovieLensAnalyzer {
 		Map<Integer, Reviewer> reviewerMap = loader.getReviewers();
 		int degree = 0;
 
-		System.out.println("Creating graph...");
+		System.out.print("\nCreating graph...");
 		//add nodes to graph
 		for(Movie mov : movieMap.values()) {
 			ratingsGraph.addVertex(mov);
@@ -118,12 +157,11 @@ public class MovieLensAnalyzer {
 
 							if(vertexRating.equals(comparatorRating)) { //note: per user we compare two separate movies, adding that user to a list if they rate the two movies the same
 								reviewerList.add(entry.getKey());
-								System.out.println(entry.getKey() + " Movie: " +  vertex.getTitle() + " " + vertexRating + " Movie: " + comparator.getTitle() + " " + comparatorRating);
 							}
 
 							if(reviewerList.size() == 12) {
 								ratingsGraph.addEdge(vertex, comparator);
-								//add stuff for finding the max degree later
+								ratingsGraph.addEdge(comparator, vertex); //undirected graph
 							}
 						}
 
@@ -132,7 +170,7 @@ public class MovieLensAnalyzer {
 
 		}
 
-		System.out.println("Vertices: " + ratingsGraph.numVertices() + " Edges: " + ratingsGraph.numEdges());
+		System.out.print("The graph has been created!\n");
 
 		return ratingsGraph;
 	}
