@@ -14,7 +14,7 @@ public class Movie {
 	private int movieId;
 	private String title;	
 	private Map<Integer, Double> ratings;
-	private Set<String> genres;	
+	private Set<String> genres;
 	
 	/**
 	 * Constructs a new movie with the given information
@@ -127,7 +127,7 @@ public class Movie {
 	public String getTitle(){
 		return title;
 	}
-	
+
 	
 	/**
 	 * Returns a string representation of the users and ratings for the movie

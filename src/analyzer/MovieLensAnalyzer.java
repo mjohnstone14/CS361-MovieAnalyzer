@@ -2,6 +2,7 @@ package analyzer;
 import data.Movie;
 import data.Reviewer;
 import graph.Graph;
+import graph.GraphAlgorithms;
 import util.DataLoader;
 import util.Pair;
 
@@ -40,6 +41,7 @@ public class MovieLensAnalyzer {
 		StringBuilder sb = new StringBuilder();
 		//load data from csv
 		DataLoader loader = new DataLoader();
+		Map<Integer, Movie> movieMap = loader.getMovies();
 		loader.loadData(moviePath, ratingPath);
 		//create prompt
 		sb.append("\nThere are 3 choices for defining adjacency:\n");
@@ -53,10 +55,10 @@ public class MovieLensAnalyzer {
 		int userOption = getUserChoice();
 
 		//create graph based on option chosen
-		Graph<Movie> g;
+		Graph<Integer> g;
 		if (userOption == 1) {
 			g = createByRatings(loader);
-			showGraphInformation(g);
+			showGraphInformation(g, movieMap);
 		} else if (userOption == 2) {
 
 		} else {
@@ -80,16 +82,16 @@ public class MovieLensAnalyzer {
 		return userOption;
 	}
 
-	private static void showGraphInformation(Graph<Movie> graph) {
+	private static void showGraphInformation(Graph<Integer> graph, Map<Integer, Movie> movieMap) {
 		displayGraphOptions();
 		int userOption = getUserChoice();
 
 		if(userOption == 1) {
-			printGraphStats(graph);
+			printGraphStats(graph, movieMap);
 		}
  	}
 
- 	private static void printGraphStats(Graph<Movie> graph) {
+ 	private static void printGraphStats(Graph<Integer> graph, Map<Integer, Movie> movieMap) {
 		StringBuilder sb = new StringBuilder();
 
 		int numEdges = graph.numEdges();
@@ -97,15 +99,50 @@ public class MovieLensAnalyzer {
 
 		float rhs = numVertices * (numVertices-1);
 		float density = numEdges / rhs;
+		Movie max = findMaxDegreeMovie(graph, movieMap);
 
 		sb.append("\nThis graph has:\n");
 		sb.append("Vertices: " + numVertices + " Edges: " + numEdges + "\n");
-		sb.append("A density of : " + density);
-
+		sb.append("A density of : " + density + "\n");
+		sb.append("Highest degree node: " +  max.toString().substring(0,5) + " With degree: " + graph.degree(max.getMovieId()) + "\n");
+		sb.append("Diameter is : " + findDiameter(graph));
 		System.out.println(sb.toString());
 
 
 	}
+
+	//find longest shortest path
+	private static String findDiameter(Graph<Integer> graph) {
+		int[][] fw = GraphAlgorithms.floydWarshall(graph);
+
+		for(int i = 0; i < fw.length-920; i++) {
+
+			for(int j = 0; j <  fw.length; j++) {
+				System.out.print("Node: "+ i + " to node " + j + "\n");
+				System.out.println("Distance of those nodes is: " + fw[i][j]);
+			}
+		}
+		return "Bro";
+	}
+
+	private static Movie findMaxDegreeMovie(Graph<Integer> graph, Map<Integer, Movie> movieMap) {
+		Integer maxMovie = null;
+		int numNode = 0;
+		int ourNode = 0;
+		for(Integer i : graph.getVertices()) {
+			if(maxMovie == null) {
+				maxMovie = i;
+			} else if(graph.degree(i) > graph.degree(maxMovie)) {
+				maxMovie = i;
+			}
+
+		}
+
+
+
+		return movieMap.get(maxMovie);
+	}
+
 	private static void displayGraphOptions() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n[Option 1] Print out statistics about the graph.\n");
@@ -118,9 +155,9 @@ public class MovieLensAnalyzer {
 	}
 
 	//[Option 1] u and v are adjacent if the same 12 users gave the same rating to both movies
-	public static Graph<Movie> createByRatings(DataLoader loader) {
+	public static Graph<Integer> createByRatings(DataLoader loader) {
 		Set<Integer> reviewerList = new HashSet<>();
-		Graph<Movie> ratingsGraph = new Graph<>();
+		Graph<Integer> ratingsGraph = new Graph<>();
 		Map<Integer, Movie> movieMap = loader.getMovies();
 		Collection<Movie> values = movieMap.values();
 		Map<Integer, Reviewer> reviewerMap = loader.getReviewers();
@@ -128,30 +165,30 @@ public class MovieLensAnalyzer {
 
 		System.out.print("\nCreating graph...");
 		//add nodes to graph
-		for(Movie mov : movieMap.values()) {
-			ratingsGraph.addVertex(mov);
+		for(Integer movieNum : movieMap.keySet()) {
+			ratingsGraph.addVertex(movieNum);
 		}
 
-		Set<Movie> vertices = new HashSet<>();
+		Set<Integer> vertices = new HashSet<>();
 		vertices.addAll(ratingsGraph.getVertices());
 
-		Movie vertex = null;
+		Integer vertex = null;
 		//iterate through vertices
-		for(Iterator<Movie> i = vertices.iterator(); i.hasNext();) {
+		for(Iterator<Integer> i = vertices.iterator(); i.hasNext();) {
 			reviewerList.clear();
 			vertex = i.next(); //copy the vertex data
 			i.remove();
 			//iterate through all other vertices
-			for(Iterator<Movie> j = vertices.iterator(); j.hasNext();) {
-				Movie comparator = j.next();
+			for(Iterator<Integer> j = vertices.iterator(); j.hasNext();) {
+				Integer comparator = j.next();
 
-				Map<Integer, Double> ratings = vertex.getRatings();
-				Map<Integer, Double> comparatorRatings = comparator.getRatings();
+				Map<Integer, Double> ratings = movieMap.get(vertex).getRatings();
+				Map<Integer, Double> comparatorRatings = movieMap.get(comparator).getRatings();
 
 
 					for(Map.Entry<Integer, Double> entry : ratings.entrySet()) {
-
-						if(vertex.rated(entry.getKey()) && comparator.rated(entry.getKey())) {
+						//System.out.println("I am " + entry.getKey() + " and " + entry.toString());
+						if(movieMap.get(vertex).rated(entry.getKey()) && movieMap.get(comparator).rated(entry.getKey())) {
 							Double vertexRating = ratings.get(entry.getKey());
 							Double comparatorRating = comparatorRatings.get(entry.getKey());
 
@@ -159,9 +196,11 @@ public class MovieLensAnalyzer {
 								reviewerList.add(entry.getKey());
 							}
 
-							if(reviewerList.size() == 12) {
+							if(reviewerList.size() == 12 && !ratingsGraph.edgeExists(vertex, comparator)) {
 								ratingsGraph.addEdge(vertex, comparator);
 								ratingsGraph.addEdge(comparator, vertex); //undirected graph
+
+
 							}
 						}
 
