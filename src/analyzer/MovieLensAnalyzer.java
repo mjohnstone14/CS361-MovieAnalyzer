@@ -60,7 +60,8 @@ public class MovieLensAnalyzer {
 			g = createByRatings(loader);
 			showGraphInformation(g, movieMap);
 		} else if (userOption == 2) {
-
+			g = createByViews(loader);
+			showGraphInformation(g, movieMap);
 		} else {
 
 		}
@@ -161,7 +162,7 @@ public class MovieLensAnalyzer {
 		Map<Integer, Movie> movieMap = loader.getMovies();
 		Collection<Movie> values = movieMap.values();
 		Map<Integer, Reviewer> reviewerMap = loader.getReviewers();
-		int degree = 0;
+
 
 		System.out.print("\nCreating graph...");
 		//add nodes to graph
@@ -215,7 +216,54 @@ public class MovieLensAnalyzer {
 	}
 
 	//[Option 2] u and v are adjacent if the same 12 users watched both movies (regardless of rating)
-	public static void createByViews() {
+	public static Graph<Integer> createByViews(DataLoader loader) {
+		Graph<Integer> watchedMovies = new Graph<>();
+		Map<Integer, Movie> movieMap = loader.getMovies();
+		Map<Integer, Reviewer> reviewerMap = loader.getReviewers();
+		Set<Integer> reviewerList = new HashSet<>();
+
+		//add nodes to graph
+		for(Integer movieNum : movieMap.keySet()) {
+			watchedMovies.addVertex(movieNum);
+		}
+
+		Set<Integer> vertices = new HashSet<>();
+		vertices.addAll(watchedMovies.getVertices());
+
+		Integer vertex = null;
+		//iterate through vertices
+		for(Iterator<Integer> i = vertices.iterator(); i.hasNext();) {
+			reviewerList.clear();
+			vertex = i.next(); //copy the vertex data
+			i.remove();
+
+			//iterate through all other vertices
+			for(Iterator<Integer> j = vertices.iterator(); j.hasNext();) {
+				Integer comparator = j.next();
+
+				//get the list of users and their ratings
+				Map<Integer, Double> ratings = movieMap.get(vertex).getRatings();
+				Map<Integer, Double> comparatorRatings = movieMap.get(comparator).getRatings();
+
+				//find the intersect between both sets of users
+				Set<Integer> ratingSet = ratings.keySet();
+				Set<Integer> comparatorSet = comparatorRatings.keySet();
+				ratingSet.retainAll(comparatorSet);
+
+				//verify that the set is of size 12 and add edges
+				if(ratingSet.size() == 12 && !watchedMovies.edgeExists(vertex, comparator)) {
+					watchedMovies.addEdge(vertex, comparator);
+					watchedMovies.addEdge(comparator, vertex);
+
+					System.out.println(movieMap.get(vertex) + " " + movieMap.get(comparator));
+				}
+
+			}
+
+
+		}
+
+		return watchedMovies;
 
 	}
 
