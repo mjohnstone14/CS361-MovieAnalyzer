@@ -34,7 +34,7 @@ public class GraphAlgorithms  {
           }
       }
 
-      return distance;
+      return prev;
 
   }
   public static int[][] floydWarshall(Graph<Integer> graph){
