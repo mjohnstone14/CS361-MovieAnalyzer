@@ -7,7 +7,7 @@ import java.util.PriorityQueue;
 
 
 
-public class GraphAlgorithms {
+public class GraphAlgorithms  {
 
     public static int[] dijkstrasAlgorithm(Graph<Integer> graph, int source){
       int[] distance = new int[graph.numVertices()];
