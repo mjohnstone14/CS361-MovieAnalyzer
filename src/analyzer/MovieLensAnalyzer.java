@@ -3,12 +3,9 @@ import data.Movie;
 import data.Reviewer;
 import graph.Graph;
 import graph.GraphAlgorithms;
+import sun.util.resources.cldr.zh.CalendarData_zh_Hans_HK;
 import util.DataLoader;
-import util.Pair;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 
 public class MovieLensAnalyzer {
@@ -41,7 +38,6 @@ public class MovieLensAnalyzer {
 		StringBuilder sb = new StringBuilder();
 		//load data from csv
 		DataLoader loader = new DataLoader();
-		Map<Integer, Movie> movieMap = loader.getMovies();
 		loader.loadData(moviePath, ratingPath);
 		//create prompt
 		sb.append("\nThere are 3 choices for defining adjacency:\n");
@@ -53,15 +49,14 @@ public class MovieLensAnalyzer {
 		System.out.print(sb.toString());
 		//scan for input and catch input exceptions
 		int userOption = getUserChoice();
-
 		//create graph based on option chosen
 		Graph<Integer> g;
 		if (userOption == 1) {
 			g = createByRatings(loader);
-			showGraphInformation(g, movieMap);
+			showGraphInformation(g, loader);
 		} else if (userOption == 2) {
 			g = createByViews(loader);
-			showGraphInformation(g, movieMap);
+			showGraphInformation(g, loader);
 		} else {
 
 		}
@@ -76,25 +71,53 @@ public class MovieLensAnalyzer {
 		} catch (InputMismatchException e) {
 			throw new InputMismatchException("Wrong format, please pick a number");
 		}
-		if (userOption > 3) {
+		if (userOption > 4) {
 			throw new IllegalArgumentException("Input option is greater than option range");
 		}
 
 		return userOption;
 	}
 
-	private static void showGraphInformation(Graph<Integer> graph, Map<Integer, Movie> movieMap) {
+	private static void showGraphInformation(Graph<Integer> graph, DataLoader loader) {
 		displayGraphOptions();
 		int userOption = getUserChoice();
 
+
 		if(userOption == 1) {
-			printGraphStats(graph, movieMap);
+			printGraphStats(graph, loader);
+		} else if(userOption == 2) {
+			printNodeInfo(graph, loader);
 		}
  	}
 
- 	private static void printGraphStats(Graph<Integer> graph, Map<Integer, Movie> movieMap) {
-		StringBuilder sb = new StringBuilder();
+	private static void printNodeInfo(Graph<Integer> graph, DataLoader loader) {
+		Scanner sc = new Scanner(System.in);
+		Integer movieNum = 0;
 
+
+		System.out.print("Enter movie ID (1-1000): " );
+		try {
+			movieNum = sc.nextInt();
+		} catch (InputMismatchException e) {
+			e.printStackTrace();
+		}
+
+
+		List<Integer> neighbors = graph.getNeighbors(movieNum);
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n" + loader.getMovies().get(movieNum).toString() + "\n");
+		sb.append("Neighbors: \n");
+
+		for(Integer n : neighbors) {
+			sb.append("\n	" + loader.getMovies().get(n).getTitle() + "\n" );
+		}
+
+		System.out.println(sb.toString());
+	}
+
+	private static void printGraphStats(Graph<Integer> graph, DataLoader loader) {
+		StringBuilder sb = new StringBuilder();
+		Map<Integer, Movie> movieMap = loader.getMovies();
 		int numEdges = graph.numEdges();
 		int numVertices = graph.numVertices();
 
@@ -138,8 +161,6 @@ public class MovieLensAnalyzer {
 			}
 
 		}
-
-
 
 		return movieMap.get(maxMovie);
 	}
@@ -200,8 +221,6 @@ public class MovieLensAnalyzer {
 							if(reviewerList.size() == 12 && !ratingsGraph.edgeExists(vertex, comparator)) {
 								ratingsGraph.addEdge(vertex, comparator);
 								ratingsGraph.addEdge(comparator, vertex); //undirected graph
-
-
 							}
 						}
 
@@ -218,10 +237,11 @@ public class MovieLensAnalyzer {
 	//[Option 2] u and v are adjacent if the same 12 users watched both movies (regardless of rating)
 	public static Graph<Integer> createByViews(DataLoader loader) {
 		Graph<Integer> watchedMovies = new Graph<>();
-		Map<Integer, Movie> movieMap = loader.getMovies();
-		Map<Integer, Reviewer> reviewerMap = loader.getReviewers();
-		Set<Integer> reviewerList = new HashSet<>();
+		Map<Integer, Movie> movieMap;
+		loader.printMovieList();
+		movieMap = loader.getMovies();
 
+		System.out.print("Creating graph...");
 		//add nodes to graph
 		for(Integer movieNum : movieMap.keySet()) {
 			watchedMovies.addVertex(movieNum);
@@ -233,7 +253,6 @@ public class MovieLensAnalyzer {
 		Integer vertex = null;
 		//iterate through vertices
 		for(Iterator<Integer> i = vertices.iterator(); i.hasNext();) {
-			reviewerList.clear();
 			vertex = i.next(); //copy the vertex data
 			i.remove();
 
@@ -246,23 +265,23 @@ public class MovieLensAnalyzer {
 				Map<Integer, Double> comparatorRatings = movieMap.get(comparator).getRatings();
 
 				//find the intersect between both sets of users
-				Set<Integer> ratingSet = ratings.keySet();
+				Set<Integer> intersect = new HashSet<>();
+				intersect.addAll(ratings.keySet());
 				Set<Integer> comparatorSet = comparatorRatings.keySet();
-				ratingSet.retainAll(comparatorSet);
+				intersect.retainAll(comparatorSet);
 
 				//verify that the set is of size 12 and add edges
-				if(ratingSet.size() == 12 && !watchedMovies.edgeExists(vertex, comparator)) {
+				if(intersect.size() == 12 && !watchedMovies.edgeExists(vertex, comparator)) {
 					watchedMovies.addEdge(vertex, comparator);
 					watchedMovies.addEdge(comparator, vertex);
 
-					System.out.println(movieMap.get(vertex) + " " + movieMap.get(comparator));
 				}
 
 			}
 
 
 		}
-
+		System.out.println("Created");
 		return watchedMovies;
 
 	}
