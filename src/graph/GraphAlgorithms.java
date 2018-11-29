@@ -29,22 +29,22 @@ public class GraphAlgorithms {
 
         while(!pQueue.isEmpty()) {
 
-            int currVertex = verts.get(pQueue.topElement());
-            int currDistance = pQueue.topPriority();
+            int currentVertex = verts.get(pQueue.topElement());
+            int currentDistance = pQueue.topPriority();
             pQueue.pop();
             
-            List<Integer> adjacencyList = graph.getNeighbors(currVertex);
+            List<Integer> adjacencyList = graph.getNeighbors(currentVertex);
             for(Integer node: adjacencyList) {
                 int alt;
-                if(currDistance != Integer.MAX_VALUE) {
-                    alt = currDistance + 1;
+                if(currentDistance != Integer.MAX_VALUE) {
+                    alt = currentDistance + 1;
                 }
                 else {
-                    alt = currDistance;
+                    alt = currentDistance;
                 }
                 if(alt<distance[node-1]) {
                     distance[node-1]= alt;
-                    parents[node-1]= currVertex;
+                    parents[node-1]= currentVertex;
                     pQueue.changePriority(node-1, alt);
                 }
             }
@@ -111,7 +111,7 @@ public class GraphAlgorithms {
 //            }
 //        }
 
-        for(int i = 1 ; i <= 5 ; i++) {
+        for(int i = 1 ; i <= 2; i++) {
             int[] ints = dijkstrasAlgorithm(g, i);
             System.out.println(Arrays.toString(ints));
         }

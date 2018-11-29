@@ -1,12 +1,15 @@
 package analyzer;
 import data.Movie;
-import data.Reviewer;
 import graph.Graph;
 import graph.GraphAlgorithms;
 import util.DataLoader;
 
 import java.util.*;
 
+/**
+ * Code written by Marwan Johnstone and Ben Shapiro
+ * CS361 MovieLens 11/28/2018
+ */
 public class MovieLensAnalyzer {
 
 	public static void main(String[] args){
@@ -39,10 +42,9 @@ public class MovieLensAnalyzer {
 		DataLoader loader = new DataLoader();
 		loader.loadData(moviePath, ratingPath);
 		//create prompt
-		sb.append("\nThere are 3 choices for defining adjacency:\n");
+		sb.append("\nThere are 2 choices for defining adjacency:\n");
 		sb.append("[Option 1] u and v are adjacent if the same 12 users gave the same rating to both movies\n");
 		sb.append("[Option 2] u and v are adjacent if the same 12 users watched both movies (regardless of rating)\n");
-		sb.append("[Option 3] u is adjacent to v if at least 33.0% of the users that rated u gave the same rating to v\n");
 		sb.append("Choose an option to build the graph (1-3): ");
 		//print prompt
 		System.out.print(sb.toString());
@@ -56,8 +58,6 @@ public class MovieLensAnalyzer {
 		} else if (userOption == 2) {
 			g = createByViews(loader);
 			showGraphInformation(g, loader);
-		} else {
-
 		}
 
 	}
@@ -95,11 +95,66 @@ public class MovieLensAnalyzer {
 		} else if(userOption == 2) {
 			printNodeInfo(graph, loader);
 		} else if(userOption == 3) {
-			System.out.println("f");
+			findShortestPaths(graph, loader);
 		} else {
 			System.exit(0);
 		}
  	}
+
+	/**
+	 * Method that uses Dijkstras algorithm to determinne the shortest path between two specified nodes
+	 * @param graph
+	 * @param loader
+	 */
+ 	private static void findShortestPaths(Graph<Integer> graph, DataLoader loader) {
+		Map<Integer, Movie> movies = loader.getMovies();
+		Scanner sc = new Scanner(System.in);
+		int startNode;
+		int endNode;
+
+		// handle user input
+		System.out.println("Enter a start node (1-1000): ");
+		startNode = sc.nextInt();
+		System.out.println("Enter an end node (1-1000): ");
+		endNode = sc.nextInt();
+
+		if (!(startNode > 0 && startNode <= 1000) || !(endNode > 0 && endNode <= 1000)) {
+			throw new InputMismatchException("Please enter valid nodes within the range 1 - 1000");
+		}
+
+		int[] parentArray = GraphAlgorithms.dijkstrasAlgorithm(graph, startNode);
+
+		//shortest path
+		StringBuilder sb = new StringBuilder();
+		int path = endNode;
+		boolean flag = false;
+
+		while (path != startNode) {
+			if (parentArray[path-1] == -1) {
+				flag = true;
+				break;
+			}
+
+			sb.append(movies.get(path).getTitle()).append(" => ").append(movies.get(parentArray[path-1]).getTitle()).append("\n"); // 20 >= 1
+			path = parentArray[path-1];
+
+
+		}
+
+		if (endNode == startNode) {
+			sb.append(movies.get(endNode).getTitle()).append(" => ").append(movies.get(startNode).getTitle());
+		}
+
+		//No path exists from start node
+		if (flag) {
+			sb.append("No path exists from start node ").append(startNode).append(" to end node ").append(endNode);
+		}
+
+		System.out.println(sb.toString());
+		showGraphInformation(graph, loader);
+	}
+
+
 
 	/**
 	 * Method that prints information about the specified node
@@ -236,9 +291,6 @@ public class MovieLensAnalyzer {
 		Set<Integer> reviewerList = new HashSet<>();
 		Graph<Integer> ratingsGraph = new Graph<>();
 		Map<Integer, Movie> movieMap = loader.getMovies();
-		Collection<Movie> values = movieMap.values();
-		Map<Integer, Reviewer> reviewerMap = loader.getReviewers();
-
 
 		System.out.print("\nCreating graph...");
 		//add nodes to graph
@@ -297,7 +349,6 @@ public class MovieLensAnalyzer {
 	public static Graph<Integer> createByViews(DataLoader loader) {
 		Graph<Integer> watchedMovies = new Graph<>();
 		Map<Integer, Movie> movieMap;
-		loader.printMovieList();
 		movieMap = loader.getMovies();
 
 		System.out.print("Creating graph...");
@@ -340,7 +391,7 @@ public class MovieLensAnalyzer {
 
 
 		}
-		System.out.println("Created");
+		System.out.println("The graph has been created");
 		return watchedMovies;
 
 	}
