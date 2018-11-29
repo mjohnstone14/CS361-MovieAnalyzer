@@ -4,42 +4,45 @@ import util.Pair;
 import java.util.*;
 
 
-public class GraphAlgorithms  {
+public class GraphAlgorithms {
 
-    public static int[] dijkstrasAlgorithm(Graph<Integer> graph, int source){
-      Set<Integer> d =  graph.getVertices();
-      Integer[] distance = new Integer[graph.numVertices()];
 
-      int k = 0;
-      for(Integer x : d) {
-        distance[k++] = x;
-      }
+    public static int[] dijkstrasAlgorithm(Graph<Integer> graph, int source) {
+        int[] distance = new int[graph.numVertices()];
+        int[] prev = new int [graph.numVertices()];
+        boolean[] beenHere = new boolean[graph.numVertices()];
+        for (int i = 0; i < distance.length; i++) {
+            distance[i] = Integer.MAX_VALUE;
+        }
+        distance[source] = 0;
 
-        int[] prev = new int[graph.numVertices()];
-      PriorityQueue<Pair> queue = new PriorityQueue<>();
-      Arrays.fill(distance, Integer.MAX_VALUE/2);
-      distance[source] = 0;
-      queue.offer(new Pair(source, 0));
+        for (int i = 0; i < distance.length; i++) {
+            final int next = shortestVertPath(distance, beenHere);
+            beenHere[next] = true;
+            List<Integer> x = graph.getNeighbors(next);
+            Integer[] n = x.toArray(new Integer[x.size()]);
+            for (int j = 0; j < n.length; j++) {
+                final int v = n[j];
+                final int d = distance[next + 1];
+                if (distance[v] > d) {
+                    distance[v] = d;
+                }
+                prev[v] = next;
+            }
+        }
+        return prev;
+    }
 
-      while (!queue.isEmpty()) {
-          Pair current = queue.poll();
-          for (Integer n :  graph.getNeighbors((Integer) current.element)){
-              int weight = 1;
-              if (distance[(Integer) current.element] != Integer.MAX_VALUE/2 && weight < distance[n]) {
-                  distance[n] = weight;
-                  prev[n] = (Integer) current.element;
-                  Pair newDistance = new Pair(n, weight);
-                  if (queue.contains(newDistance)) {
-                      queue.remove(newDistance);
-                  }
-                  queue.offer(newDistance);
-              }
-          }
-      }
+    private static int shortestVertPath (int [] distance, boolean [] v) {
+        int x = Integer.MAX_VALUE;
+        int y = -1;   // graph not connected, or no unvisited vertices
+        for (int i=0; i<distance.length; i++) {
+            if (!v[i] && distance[i]<x) {y=i; x=distance[i];}
+            }
+        return y;
+        }
 
-      return prev;
 
-  }
   public static int[][] floydWarshall(Graph<Integer> graph){
     int vertNum = graph.numVertices();
         int[][] distance = new int[vertNum+1][vertNum+1];
