@@ -77,20 +77,21 @@ public class GraphAlgorithms  {
         g.addVertex(3);
         g.addVertex(4);
         g.addVertex(5);
-        g.addEdge(1,2);
+        g.addEdge(1, 2);
         g.addEdge(2,3);
-        g.addEdge(3,4);
-        g.addEdge(4,5);
-        g.addEdge(1,3);
-        g.addEdge(1,4);
-        g.addEdge(3,2);
-        g.addEdge(2,4);
+        g.addEdge(3,5);
+        g.addEdge(5,4);
         int[][] fw = floydWarshall(g);
 
 
-        for(int i = 1; i < fw.length-1; i++) {
-            for(int j = 1; j < fw.length-1; j++) {
-                System.out.println("i: " + i + " j: " + j + " distance between: " + fw[i][j]);
+        for(int i = 1; i < fw.length; i++) {
+
+            for (int j = 1; j < fw.length; j++) {
+                if (fw[i][j] != Integer.MAX_VALUE / 2) {
+
+                    System.out.print("Node: " + i + " to node " + j + "\n");
+                    System.out.println("Distance of those nodes is: " + fw[i][j]);
+                }
             }
         }
 

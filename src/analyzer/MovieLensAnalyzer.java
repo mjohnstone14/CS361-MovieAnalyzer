@@ -146,13 +146,30 @@ public class MovieLensAnalyzer {
 	private static String findDiameter(Graph<Integer> graph) {
 		int[][] fw = GraphAlgorithms.floydWarshall(graph);
 
-		for(int i = 0; i < fw.length-920; i++) {
+		int maxDiameter = 0;
+		int node1 = 0;
+		int node2 = 0;
+		for(int i = 0; i < fw.length; i++) {
 
 			for(int j = 0; j <  fw.length; j++) {
-				System.out.print("Node: "+ i + " to node " + j + "\n");
-				System.out.println("Distance of those nodes is: " + fw[i][j]);
+				if(fw[i][j] != Integer.MAX_VALUE/2) {
+
+					System.out.print("Node: "+ i + " to node " + j + "\n");
+					System.out.println("Distance of those nodes is: " + fw[i][j]);
+
+					if(maxDiameter == 0) {
+						maxDiameter = fw[i][j];
+						node1 = i;
+						node2 = j;
+					} else if(fw[i][j] > maxDiameter) {
+						maxDiameter = fw[i][j];
+						node1 = i;
+						node2 = j;
+					}
+				}
 			}
 		}
+		System.out.println(maxDiameter + " from " + node1 + " to " + node2) ;
 		return "Bro";
 	}
 
