@@ -3,7 +3,6 @@ import data.Movie;
 import data.Reviewer;
 import graph.Graph;
 import graph.GraphAlgorithms;
-import sun.util.resources.cldr.zh.CalendarData_zh_Hans_HK;
 import util.DataLoader;
 
 import java.util.*;
@@ -63,6 +62,10 @@ public class MovieLensAnalyzer {
 
 	}
 
+	/**
+	 * Method to get user choice from scanner
+	 * @return
+	 */
 	private static int getUserChoice() {
 		Scanner sc = new Scanner(System.in);
 		int userOption;
@@ -78,10 +81,14 @@ public class MovieLensAnalyzer {
 		return userOption;
 	}
 
+	/**
+	 * Method that handles which helper method to call based on user input
+	 * @param graph
+	 * @param loader
+	 */
 	private static void showGraphInformation(Graph<Integer> graph, DataLoader loader) {
 		displayGraphOptions();
 		int userOption = getUserChoice();
-
 
 		if(userOption == 1) {
 			printGraphStats(graph, loader);
@@ -94,6 +101,11 @@ public class MovieLensAnalyzer {
 		}
  	}
 
+	/**
+	 * Method that prints information about the specified node
+	 * @param graph
+	 * @param loader
+	 */
 	private static void printNodeInfo(Graph<Integer> graph, DataLoader loader) {
 		Scanner sc = new Scanner(System.in);
 		Integer movieNum = 0;
@@ -120,6 +132,11 @@ public class MovieLensAnalyzer {
 		showGraphInformation(graph, loader);
 	}
 
+	/**
+	 * Method that handles all the graph statistics such as num edges, num vertices, etc.
+	 * @param graph
+	 * @param loader
+	 */
 	private static void printGraphStats(Graph<Integer> graph, DataLoader loader) {
 		StringBuilder sb = new StringBuilder();
 		Map<Integer, Movie> movieMap = loader.getMovies();
@@ -142,6 +159,11 @@ public class MovieLensAnalyzer {
 
 	}
 
+	/**
+	 * Method to find the diameter of a given graph
+	 * @param graph
+	 * @return
+	 */
 	//find longest shortest path
 	private static String findDiameter(Graph<Integer> graph) {
 		int[][] fw = GraphAlgorithms.floydWarshall(graph);
@@ -168,6 +190,12 @@ public class MovieLensAnalyzer {
 		return (maxDiameter + " from " + node1 + " to " + node2);
 	}
 
+	/**
+	 * Method to find the node with the highest degree in the graph
+	 * @param graph
+	 * @param movieMap
+	 * @return
+	 */
 	private static Movie findMaxDegreeMovie(Graph<Integer> graph, Map<Integer, Movie> movieMap) {
 		Integer maxMovie = null;
 
@@ -183,6 +211,9 @@ public class MovieLensAnalyzer {
 		return movieMap.get(maxMovie);
 	}
 
+	/**
+	 * Helper method to display options that the user can pick for the graph
+	 */
 	private static void displayGraphOptions() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n[Option 1] Print out statistics about the graph.\n");
@@ -194,6 +225,12 @@ public class MovieLensAnalyzer {
 		System.out.print(sb.toString());
 	}
 
+	/**
+	 * Method to create a graph based on user ratings, u and v adjacent if the same 12 users gave the same rating to
+	 * both movies
+	 * @param loader
+	 * @return
+	 */
 	//[Option 1] u and v are adjacent if the same 12 users gave the same rating to both movies
 	public static Graph<Integer> createByRatings(DataLoader loader) {
 		Set<Integer> reviewerList = new HashSet<>();
@@ -252,7 +289,11 @@ public class MovieLensAnalyzer {
 		return ratingsGraph;
 	}
 
-	//[Option 2] u and v are adjacent if the same 12 users watched both movies (regardless of rating)
+	/**
+	 * Method to create graph based on views, u and v are adjacent if the same 12 users watched both movies (regardless of rating)
+	 * @param loader
+	 * @return
+	 */
 	public static Graph<Integer> createByViews(DataLoader loader) {
 		Graph<Integer> watchedMovies = new Graph<>();
 		Map<Integer, Movie> movieMap;
@@ -301,11 +342,6 @@ public class MovieLensAnalyzer {
 		}
 		System.out.println("Created");
 		return watchedMovies;
-
-	}
-
-	//[Option 3] u is adjacent to v if at least 33.0% of the users that rated u gave the same rating to v
-	public static void createByPercentage() {
 
 	}
 
