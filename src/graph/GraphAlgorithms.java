@@ -1,30 +1,33 @@
 package graph;
 import util.Pair;
 
-import java.util.List;
-import java.util.Arrays;
-import java.util.PriorityQueue;
-
+import java.util.*;
 
 
 public class GraphAlgorithms  {
 
     public static int[] dijkstrasAlgorithm(Graph<Integer> graph, int source){
-      int[] distance = new int[graph.numVertices()];
-      int[] prev = new int[graph.numVertices()];
-      PriorityQueue<Pair> queue = new PriorityQueue<>();
+      Set<Integer> d =  graph.getVertices();
+      Integer[] distance = new Integer[graph.numVertices()];
 
+      int k = 0;
+      for(Integer x : d) {
+        distance[k++] = x;
+      }
+
+        int[] prev = new int[graph.numVertices()];
+      PriorityQueue<Pair> queue = new PriorityQueue<>();
       Arrays.fill(distance, Integer.MAX_VALUE/2);
       distance[source] = 0;
       queue.offer(new Pair(source, 0));
 
       while (!queue.isEmpty()) {
           Pair current = queue.poll();
-          for (Integer n :  graph.getNeighbors((Integer)current.priority)){
+          for (Integer n :  graph.getNeighbors((Integer) current.element)){
               int weight = 1;
-              if (distance[(Integer) current.priority] != Integer.MAX_VALUE/2 && weight < distance[n]) {
+              if (distance[(Integer) current.element] != Integer.MAX_VALUE/2 && weight < distance[n]) {
                   distance[n] = weight;
-                  prev[n] = (Integer) current.priority;
+                  prev[n] = (Integer) current.element;
                   Pair newDistance = new Pair(n, weight);
                   if (queue.contains(newDistance)) {
                       queue.remove(newDistance);
@@ -84,16 +87,22 @@ public class GraphAlgorithms  {
         int[][] fw = floydWarshall(g);
 
 
-        for(int i = 1; i < fw.length; i++) {
+//        for(int i = 1; i < fw.length; i++) {
+//
+//            for (int j = 1; j < fw.length; j++) {
+//                if (fw[i][j] != Integer.MAX_VALUE / 2) {
+//
+//                    System.out.print("Node: " + i + " to node " + j + "\n");
+//                    System.out.println("Distance of those nodes is: " + fw[i][j]);
+//                }
+//            }
+//        }
 
-            for (int j = 1; j < fw.length; j++) {
-                if (fw[i][j] != Integer.MAX_VALUE / 2) {
-
-                    System.out.print("Node: " + i + " to node " + j + "\n");
-                    System.out.println("Distance of those nodes is: " + fw[i][j]);
-                }
-            }
+        for(int i = 1 ; i <= 5 ; i++) {
+            int[] ints = dijkstrasAlgorithm(g, i);
+            System.out.println(Arrays.toString(ints));
         }
+
 
     }
 
