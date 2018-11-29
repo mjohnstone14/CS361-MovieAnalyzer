@@ -153,10 +153,6 @@ public class MovieLensAnalyzer {
 
 			for(int j = 0; j <  fw.length; j++) {
 				if(fw[i][j] != Integer.MAX_VALUE/2) {
-
-					System.out.print("Node: "+ i + " to node " + j + "\n");
-					System.out.println("Distance of those nodes is: " + fw[i][j]);
-
 					if(maxDiameter == 0) {
 						maxDiameter = fw[i][j];
 						node1 = i;
@@ -169,14 +165,12 @@ public class MovieLensAnalyzer {
 				}
 			}
 		}
-		System.out.println(maxDiameter + " from " + node1 + " to " + node2) ;
-		return "Bro";
+		return (maxDiameter + " from " + node1 + " to " + node2);
 	}
 
 	private static Movie findMaxDegreeMovie(Graph<Integer> graph, Map<Integer, Movie> movieMap) {
 		Integer maxMovie = null;
-		int numNode = 0;
-		int ourNode = 0;
+
 		for(Integer i : graph.getVertices()) {
 			if(maxMovie == null) {
 				maxMovie = i;
