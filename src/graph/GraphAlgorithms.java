@@ -1,46 +1,56 @@
 package graph;
-import util.Pair;
-
 import java.util.*;
-
+import util.PriorityQueue;
 
 public class GraphAlgorithms {
 
 
     public static int[] dijkstrasAlgorithm(Graph<Integer> graph, int source) {
-        int[] distance = new int[graph.numVertices()];
-        int[] prev = new int [graph.numVertices()];
-        boolean[] beenHere = new boolean[graph.numVertices()];
-        for (int i = 0; i < distance.length; i++) {
-            distance[i] = Integer.MAX_VALUE;
-        }
-        distance[source] = 0;
+        Integer[] vArray = graph.getVertices().toArray(new Integer[graph.getVertices().size()]);
+        ArrayList<Integer> verts = new ArrayList<Integer>(Arrays.asList(vArray));
+        PriorityQueue pQueue = new PriorityQueue();
+        int[] distance= new int[verts.size()];
+        int[] parents= new int[verts.size()];
 
-        for (int i = 0; i < distance.length; i++) {
-            final int next = shortestVertPath(distance, beenHere);
-            beenHere[next] = true;
-            List<Integer> x = graph.getNeighbors(next);
-            Integer[] n = x.toArray(new Integer[x.size()]);
-            for (int j = 0; j < n.length; j++) {
-                final int v = n[j];
-                final int d = distance[next + 1];
-                if (distance[v] > d) {
-                    distance[v] = d;
+        for(int i=0;i<verts.size();i++) {
+            if(verts.get(i)== source) {
+                distance[i]= 0;
+                parents[i]= -1;
+            }
+            else {
+                distance[i]= Integer.MAX_VALUE;
+                parents[i]= -1;
+            }
+        }
+
+        for(int i=0;i<verts.size();i++) {
+            pQueue.push(distance[i],i);
+        }
+
+        while(!pQueue.isEmpty()) {
+
+            int currVertex = verts.get(pQueue.topElement());
+            int currDistance = pQueue.topPriority();
+            pQueue.pop();
+            
+            List<Integer> adjacencyList = graph.getNeighbors(currVertex);
+            for(Integer node: adjacencyList) {
+                int alt;
+                if(currDistance != Integer.MAX_VALUE) {
+                    alt = currDistance + 1;
                 }
-                prev[v] = next;
+                else {
+                    alt = currDistance;
+                }
+                if(alt<distance[node-1]) {
+                    distance[node-1]= alt;
+                    parents[node-1]= currVertex;
+                    pQueue.changePriority(node-1, alt);
+                }
             }
         }
-        return prev;
+        return parents;
     }
-
-    private static int shortestVertPath (int [] distance, boolean [] v) {
-        int x = Integer.MAX_VALUE;
-        int y = -1;   // graph not connected, or no unvisited vertices
-        for (int i=0; i<distance.length; i++) {
-            if (!v[i] && distance[i]<x) {y=i; x=distance[i];}
-            }
-        return y;
-        }
 
 
   public static int[][] floydWarshall(Graph<Integer> graph){

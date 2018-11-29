@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f17dcacd-93ae-4e6a-9732-dbd9c221e4f6" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/analyzer/MovieLensAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/analyzer/MovieLensAnalyzer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graph/GraphAlgorithms.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/graph/GraphAlgorithms.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -12,11 +12,11 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/MovieLens$GraphAlgorithms.ic" NAME="GraphAlgorithms Coverage Results" MODIFIED="1543456848011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-      <FILTER>graph.*</FILTER>
-    </SUITE>
     <SUITE FILE_PATH="coverage/MovieLens$MovieLensAnalyzer.ic" NAME="MovieLensAnalyzer Coverage Results" MODIFIED="1542314628511" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>analyzer.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/MovieLens$GraphAlgorithms.ic" NAME="GraphAlgorithms Coverage Results" MODIFIED="1543456848011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>graph.*</FILTER>
     </SUITE>
   </component>
   <component name="CoverageViewManager">
@@ -68,18 +68,18 @@
       <usages-collector id="statistics.lifecycle.project">
         <counts>
           <entry key="project.open.time.1" value="2" />
-          <entry key="project.open.time.2" value="1" />
-          <entry key="project.opened" value="3" />
+          <entry key="project.open.time.2" value="2" />
+          <entry key="project.opened" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="1447" />
+          <entry key="java" value="1531" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="1447" />
+          <entry key="JAVA" value="1531" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -96,13 +96,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/graph/GraphAlgorithms.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="423">
-              <caret line="103" column="30" selection-start-line="103" selection-start-column="30" selection-end-line="103" selection-end-column="30" />
+            <state relative-caret-position="420">
+              <caret line="28" column="22" lean-forward="true" selection-start-line="28" selection-start-column="22" selection-end-line="28" selection-end-column="22" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#331#340#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -117,10 +118,10 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/analyzer/MovieLensAnalyzer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
+            <state relative-caret-position="-341">
               <caret line="292" column="130" selection-start-line="292" selection-start-column="130" selection-end-line="292" selection-end-column="130" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -211,8 +212,8 @@
         <option value="$PROJECT_DIR$/src/graph/Graph.java" />
         <option value="$PROJECT_DIR$/src/data/Movie.java" />
         <option value="$PROJECT_DIR$/src/graph/trial.java" />
-        <option value="$PROJECT_DIR$/src/graph/GraphAlgorithms.java" />
         <option value="$PROJECT_DIR$/src/analyzer/MovieLensAnalyzer.java" />
+        <option value="$PROJECT_DIR$/src/graph/GraphAlgorithms.java" />
       </list>
     </option>
   </component>
@@ -222,11 +223,11 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="3" />
-    <option name="y" value="22" />
-    <option name="width" value="1277" />
-    <option name="height" value="729" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="470" />
+    <option name="y" value="23" />
+    <option name="width" value="810" />
+    <option name="height" value="728" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -234,9 +235,10 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane" />
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -346,10 +348,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1472" height="878" extended-state="6" />
+    <frame x="470" y="23" width="810" height="728" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13739377" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.140625" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -461,22 +463,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/graph/GraphAlgorithms.java">
+    <entry file="file://$PROJECT_DIR$/src/analyzer/MovieLensAnalyzer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="423">
-          <caret line="103" column="30" selection-start-line="103" selection-start-column="30" selection-end-line="103" selection-end-column="30" />
+        <state relative-caret-position="-341">
+          <caret line="292" column="130" selection-start-line="292" selection-start-column="130" selection-end-line="292" selection-end-column="130" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/analyzer/MovieLensAnalyzer.java">
+    <entry file="file://$PROJECT_DIR$/src/graph/GraphAlgorithms.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="292" column="130" selection-start-line="292" selection-start-column="130" selection-end-line="292" selection-end-column="130" />
+        <state relative-caret-position="420">
+          <caret line="28" column="22" lean-forward="true" selection-start-line="28" selection-start-column="22" selection-end-line="28" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#331#340#0" expanded="true" />
           </folding>
         </state>
       </provider>
