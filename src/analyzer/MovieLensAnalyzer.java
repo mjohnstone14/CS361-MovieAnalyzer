@@ -87,6 +87,10 @@ public class MovieLensAnalyzer {
 			printGraphStats(graph, loader);
 		} else if(userOption == 2) {
 			printNodeInfo(graph, loader);
+		} else if(userOption == 3) {
+			System.out.println("f");
+		} else {
+			System.exit(0);
 		}
  	}
 
@@ -113,6 +117,7 @@ public class MovieLensAnalyzer {
 		}
 
 		System.out.println(sb.toString());
+		showGraphInformation(graph, loader);
 	}
 
 	private static void printGraphStats(Graph<Integer> graph, DataLoader loader) {
@@ -131,6 +136,8 @@ public class MovieLensAnalyzer {
 		sb.append("Highest degree node: " +  max.toString().substring(0,5) + " With degree: " + graph.degree(max.getMovieId()) + "\n");
 		sb.append("Diameter is : " + findDiameter(graph));
 		System.out.println(sb.toString());
+
+		showGraphInformation(graph, loader);
 
 
 	}
